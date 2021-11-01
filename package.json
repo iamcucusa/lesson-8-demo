@@ -1,7 +1,7 @@
 {
-  "name": "javascript-development-environment",
+  "name": "frontend-development-environment",
   "version": "1.0.0",
-  "description": "JavaScript development environment Pluralsight course by Cory House",
+  "description": "More than JS L8 demo",
   "scripts": {
     "prestart": "babel-node buildScripts/startMessage.js",
     "start": "npm-run-all --parallel open:src lint:watch test:watch start-mockapi",
@@ -12,7 +12,7 @@
     "lint:watch": "npm run lint -- --watch",
     "test": "mocha --reporter progress buildScripts/testSetup.js \"src/**/*.test.js\""
   },
-  "author": "Cory House",
+  "author": "More than JS class",
   "license": "MIT",
   "dependencies": {
     "whatwg-fetch": "3.6.2"
