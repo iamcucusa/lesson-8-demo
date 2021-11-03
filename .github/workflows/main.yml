@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI
+name: CI/CD
 
 # Controls when the workflow will run
 on:
@@ -12,6 +12,18 @@ on:
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+
+env:
+  DOCKER_IMAGE_NAME: lesson-11-demo # Must not exist as a package associated with a different repo!
+  IMAGE_REGISTRY_URL: docker.pkg.github.com
+  #################################################
+  ### USER PROVIDED VALUES ARE REQUIRED BELOW   ###
+  #################################################
+  #################################################
+  ### REPLACE USERNAME WITH GH USERNAME         ###
+  AZURE_WEBAPP_NAME: lesson-11-demo-app
+  #################################################
+
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -25,6 +37,40 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
+      # Install Dependencies
+      - name: Install Dependencies
         run: npm install
+      # Linting
+      - name: Lint Code
+        run: npm run lint
+      # Testing
+      - name: Unit Test
+        run: npm run test
+      # Build
+      - name: Build
+        run: npm run build
+      - uses: actions/upload-artifact@main
+        with:
+          name: my-artifact
+          path: public/
+
+  Build-Docker-Image:
+    runs-on: ubuntu-latest
+    needs: build
+    name: Build image and store in GitHub Packages
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Download built artifact
+        uses: actions/download-artifact@main
+        with:
+          name: my-artifact
+          path: public
+
+      - name: create image and store in Packages
+        uses: mattdavis0351/actions/docker-gpr@1.3.0
+        with:
+          repo-token: ${{secrets.GITHUB_TOKEN}}
+          image-name: ${{env.DOCKER_IMAGE_NAME}}
+
